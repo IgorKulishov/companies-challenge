@@ -5,15 +5,6 @@ module.exports.update = async (event, context, callback) => {
   const client = await db.init();
   let data;
 
-  if(!client && !client.query) {
-    callback({
-      statusCode: 400,
-      headers: { 'Content-Type': 'application/json' },
-      body: 'Something went wrong',
-    }, null);
-    return;
-  }
-
   const companyId = event.path.id;
   if(typeof event.body === 'string') {
     data = JSON.parse(event.body);
@@ -21,13 +12,11 @@ module.exports.update = async (event, context, callback) => {
     data = event.body;
   }
   if (!companyId || !data || !data.name || !data.locationCity || !data.locationState || !data.foundedDate || !data.founderFullName || !data.founderPosition || !data.description) {
-    console.error('Validation Failed');
-    callback({
+    return {
       statusCode: 400,
       headers: { 'Content-Type': 'application/json' },
       body: 'Please specify all parameters of request',
-    }, null);
-    return;
+    };
   }
   /** Update company **/
   const text = `update companies_info set
