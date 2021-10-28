@@ -1,0 +1,20 @@
+.companies-list {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.add-company {
+    margin: 0.5rem 0.5rem 0.5rem auto;
+    border: solid #ccc 2px;
+    border-radius: 2px;
+    padding: 0.25rem;
+    font-size: 1rem;
+    cursor: pointer;
+    color: #0c5460;
+}
+.add-company:hover {
+    box-shadow: 10px 5px 5px lightcyan;
+}
+.add-company:active {
+    box-shadow: 10px 5px 5px lightskyblue;
+}
