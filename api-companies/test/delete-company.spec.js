@@ -1,17 +1,19 @@
 'use strict';
 const expect = require('chai').expect;
 const sinon = require('sinon');
-const mock = require('../test/mock');
 const deleteCompany = require('../controllers/delete-company');
 const db = require('../db/init');
 
 describe('delete company', () => {
     let querySpy = sinon.spy();
-    const clientSpy = sinon.stub(db, 'init').resolves({
-        query: querySpy
-    });
     beforeEach(() => {
+        sinon.stub(db, 'init').resolves({
+            query: querySpy
+        });
+    });
+    afterEach(() => {
         querySpy.resetHistory();
+        db.init.restore();
     });
     it('was able to delete company', async () => {
         const deleteMockLambdaCallback = sinon.spy();

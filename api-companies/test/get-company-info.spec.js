@@ -1,22 +1,29 @@
 'use strict';
 const expect = require('chai').expect;
 const sinon = require('sinon');
-const mock = require('../test/mock');
-const createCompany = require('../controllers/create-company');
 const getCompany = require('../controllers/get-company-info');
-const { companies } = require('../constants/temp-store/store');
-describe('update company', () => {
-    it('was able to update company', async () => {
-        const mockLambdaCallback = sinon.spy();
-        const getCompanyMockLambdaCallback = sinon.spy();
-        await createCompany.create(mock.eventMock, {}, mockLambdaCallback);
-        const companyId = companies[0].id;
-        await getCompany.getByCompanyId({...mock.updateEventMock, path: {id: companyId}}, {}, getCompanyMockLambdaCallback);
-        expect(getCompanyMockLambdaCallback.calledOnce).to.be.true;
+const db = require('../db/init');
+
+describe('get company', () => {
+    let querySpy = sinon.spy();
+    beforeEach(() => {
+        sinon.stub(db, 'init').resolves({
+            query: querySpy
+        });
     });
-    it('was not able to create company', async () => {
+    afterEach(() => {
+        querySpy.resetHistory();
+        db.init.restore();
+    });
+    it('was able to get company information', async () => {
         const mockLambdaCallback = sinon.spy();
-        await createCompany.create(mock.emptyEventMock, {}, mockLambdaCallback);
-        expect(mockLambdaCallback.calledOnce).to.be.true;
+        const companyId = 1;
+        await getCompany.getByCompanyId({ path: { id: companyId } }, {}, mockLambdaCallback);
+        expect(querySpy.calledOnce).to.be.true;
+    });
+    it('was not able to get company information', async () => {
+        const mockLambdaCallback = sinon.spy();
+        await getCompany.getByCompanyId({path: {id: undefined}}, {}, mockLambdaCallback);
+        expect(querySpy.calledOnce).to.be.false;
     });
 });
